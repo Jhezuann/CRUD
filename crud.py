@@ -8,6 +8,8 @@ wn = Tk()
 wn.title("CRUD")
 wn.geometry("900x350")
 
+#Campos
+
 miId=StringVar()
 miNombre=StringVar()
 miApellido=StringVar()
@@ -15,23 +17,13 @@ miEdad=StringVar()
 miCargo=StringVar()
 miSalario=StringVar()
 
-# Conexion y cursor
+# Conexion, cursor y tree
 
 miConexion=sqlite3.connect("base")
 miCursor=miConexion.cursor()
 
-# Tabla
 tree=ttk.Treeview(height=10, columns=('#0', '#1', '#2', '#3', '#4'))
-tree.place(x=0, y=130)
-tree.column('#0', width=100)
-tree.heading('#0', text="ID", anchor=CENTER)
-tree.heading('#1', text="NAME", anchor=CENTER)
-tree.heading('#2', text="SURNAME", anchor=CENTER)
-tree.column('#3', width=100)
-tree.heading('#3', text="AGE", anchor=CENTER)
-tree.heading('#4', text="CHARGE", anchor=CENTER)
-tree.column('#5', width=100)
-tree.heading('#5', text="SALARY", anchor=CENTER)
+
 # Funciones
 
 def conexionBBDD():
@@ -45,12 +37,12 @@ def conexionBBDD():
 			CARGO VARCHAR(50) NOT NULL,
 			SALARIO INT NOT NULL)
 			''')
-		messagebox.showinfo("CONEXION", "Base de datos Creada exitosamente")
+		messagebox.showinfo("CONNECTION", "Database created successfully")
 	except:
-		messagebox.showinfo("CONEXION", "Conecion exitosa con la base de datos")
+		messagebox.showinfo("CONNECTION", "Successful connection to the database")
 
 def eliminarBBDD():
-	if messagebox.askyesno(message="Los datos se perderan definitivamente, Desea continuar?", title="ADVERTENCIA"):
+	if messagebox.askyesno(message="The data will be permanently lost, do you want to continue?", title="CAVEAT"):
 		miCursor.execute("DROP TABLE empleado")
 	else:
 		pass
@@ -74,7 +66,7 @@ def limpiarCampos():
 
 def acercaDe():
 	messagebox.showinfo(message='''
-		Aplicacion CRUD
+		application CRUD
 		Version 1.0
 		Python''', title="Acerca De")
 
@@ -97,7 +89,7 @@ def create():
 		miCursor.execute("INSERT INTO empleado VALUES(NULL,?,?,?,?,?)", (datos))
 		miConexion.commit()
 	except:
-		messagebox.showwarning("ADVERTENCIA", "Ocurrio un error al crear un registro, Verfique conexion con BBDD")
+		messagebox.showwarning("CAVEAT", "An error occurred when creating a record, check connection with BBDD")
 		pass
 	limpiarCampos()
 	read()
@@ -120,37 +112,49 @@ def update():
 		miCursor.execute("UPDATE empleado SET NOMBRE=?, APELLIDO=?, EDAD=?, CARGO=?, SALARIO=? WHERE ID="+miId.get(), (datos))
 		miConexion.commit()
 	except:
-		messagebox.showwarning("ADVERTENCIA", "Ocurrio un error al actualizar el registro")
+		messagebox.showwarning("CAVEAT", "An error occurred while updating the registry")
 		pass
 	limpiarCampos()
 	read()
 
 def delete():
 	try:
-		if messagebox.askyesno(message="Realmente desea eliminar el registro?", title="ADVERTENCIA"):
+		if messagebox.askyesno(message="Do you really want to delete the record?", title="CAVEAT"):
 			miCursor.execute("DELETE FROM empleado WHERE ID="+miId.get())
 			miConexion.commit()
 	except:
-		messagebox.showwarning("ADVERTENCIA", "Ocurrio un error al eliminar el registro")
+		messagebox.showwarning("CAVEAT", "An error occurred while deleting the record")
 		pass
 	limpiarCampos()
 	read()
 
 #Elementos graficos
 
+# Tabla
+tree.place(x=0, y=130)
+tree.column('#0', width=100)
+tree.heading('#0', text="ID", anchor=CENTER)
+tree.heading('#1', text="NAME", anchor=CENTER)
+tree.heading('#2', text="SURNAME", anchor=CENTER)
+tree.column('#3', width=100)
+tree.heading('#3', text="AGE", anchor=CENTER)
+tree.heading('#4', text="CHARGE", anchor=CENTER)
+tree.column('#5', width=100)
+tree.heading('#5', text="SALARY", anchor=CENTER)
+
 #menu
 
 barraMenu=Menu(wn)
 inicio=Menu(barraMenu, tearoff=0)
-inicio.add_command(label="Crear/Conectar a la Base de Datos", command=conexionBBDD)
-inicio.add_command(label="Eliminar Base de Datos", command=eliminarBBDD)
-inicio.add_command(label="Salir", command=salir)
-barraMenu.add_cascade(label="Inicio", menu=inicio)
+inicio.add_command(label="Create/Connect to Database", command=conexionBBDD)
+inicio.add_command(label="Delete Database", command=eliminarBBDD)
+inicio.add_command(label="Exit", command=salir)
+barraMenu.add_cascade(label="beginning", menu=inicio)
 
 rese=Menu(barraMenu, tearoff=0)
-rese.add_command(label="Resetar campos", command=limpiarCampos)
-rese.add_command(label="Acerca De", command=acercaDe)
-barraMenu.add_cascade(label="Resetar", menu=rese)
+rese.add_command(label="reset fields", command=limpiarCampos)
+rese.add_command(label="about", command=acercaDe)
+barraMenu.add_cascade(label="Help", menu=rese)
 
 #Etiquetas y cajas de texto
 
@@ -197,7 +201,6 @@ b1.place(x=647, y=65)
 
 b1=Button(wn, text="Delete", bg="red", command=delete)
 b1.place(x=796, y=65)
-
 
 wn.config(menu=barraMenu)
 
